@@ -64,7 +64,7 @@ class VOCDataset(Dataset):
         im_info = self.images_info[index]
         im = Image.open(im_info['filename']).convert("RGB")
 
-        # Data augmentation: lật ảnh ngang
+        
         to_flip = self.split == 'train' and random.random() < 0.5
         if to_flip:
             im = im.transpose(Image.FLIP_LEFT_RIGHT)
