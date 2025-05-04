@@ -14,7 +14,7 @@ model_params = {
     'roi_batch_size': 128,
     'roi_pos_fraction': 0.25,
     'roi_iou_threshold': 0.5,
-    'roi_low_bg_iou': 0.0,
+    'roi_low_bg_iou': 0.0, #increase it to 0.1 for hard negative
     'roi_nms_threshold': 0.5,
     'roi_topk_detections': 100,
     'roi_score_threshold': 0.05,
