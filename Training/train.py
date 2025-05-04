@@ -3,7 +3,7 @@ import torch
 from torch.utils.data import DataLoader
 from tqdm import tqdm
 from Config.config import model_params
-from Dataset_Loader.voc_helmet_dataset import VOCDataset   
+from Dataset_Loader.voc_dataset import VOCDataset   
 from Model.faster_rcnn import FasterRCNN        
 
 def collate_fn(batch):
