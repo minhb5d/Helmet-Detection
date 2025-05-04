@@ -14,7 +14,7 @@ def organize_voc_folder(root_dir):
     os.makedirs(jpeg_dir, exist_ok=True)
     os.makedirs(ann_dir, exist_ok=True)
 
-    # Move files
+    
     for filename in os.listdir(root_dir):
         file_path = os.path.join(root_dir, filename)
         if os.path.isfile(file_path):
