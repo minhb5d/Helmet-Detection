@@ -844,7 +844,7 @@ class FasterRCNN(nn.Module):
         # Call ROI head and convert proposals to boxes
         frcnn_output = self.roi_head(feat, proposals, image.shape[-2:], target)
         if not self.training:
-            # Transform boxes to original image dimensions called only during inference
+            # Transform boxes to original image dimensions called only during inference.
             frcnn_output['boxes'] = transform_boxes_to_original_size(frcnn_output['boxes'],
                                                                      image.shape[-2:],
                                                                      old_shape)
