@@ -30,7 +30,7 @@ Dự án sử dụng dữ liệu theo định dạng PASCAL VOC và được hu�
 **6.Inference**
 - Để thực hiện dự đoán trên ảnh mới, sử dụng file helmet_inference.py trong thư mục Inference: ***python Inference/helmet_inference.py***
 - Đảm bảo mô hình đã huấn luyện (faster_rcnn_helmet.pth) được tải trước khi dự đoán.
-- Kết quả suy luận sẽ hiển thị các hộp giới hạn (bounding boxes) và nhãn (helmet hoặc no-helmet) trên ảnh.
+- Kết quả dự đoán sẽ hiển thị các hộp giới hạn (bounding boxes) và nhãn (helmet hoặc no-helmet) trên ảnh.
 
 **7.Model Architecture**
 - Dự án sử dụng Faster R-CNN với các thành phần chính:
