@@ -15,13 +15,13 @@ Dự án sử dụng dữ liệu theo định dạng PASCAL VOC và được hu�
 
 **4.Dataset**
 - Dự án sử dụng dữ liệu theo định dạng PASCAL VOC, với cấu trúc thư mục như sau:
-  JPEGImages/: Chứa các file ảnh (.jpg hoặc .png).
-  Annotations/: Chứa các file annotation (.xml) tương ứng với từng ảnh.
+  - JPEGImages/: Chứa các file ảnh (.jpg hoặc .png).
+  - Annotations/: Chứa các file annotation (.xml) tương ứng với từng ảnh.
 - Dataset gồm khoảng 4720 ảnh đã được tiền xử lý và gán nhãn qua Roboflow
 - Phân chia tập dữ liệu: 80%-10%-10% tương ứng với từng tập train test valid
 - Số lượng label:
-   helmet: 23332 
-   no-helmet: 18539
+   - helmet: 23332 
+   - no-helmet: 18539
 
 **5.Train**
 - Đường dẫn dữ liệu huấn luyện được cấu hình trong train.py 
@@ -34,9 +34,9 @@ Dự án sử dụng dữ liệu theo định dạng PASCAL VOC và được hu�
 
 **7.Model Architecture**
 - Dự án sử dụng Faster R-CNN với các thành phần chính:
-  Backbone: VGG16 (các lớp trước max-pooling cuối cùng).
-  Region Proposal Network (RPN): Tạo các đề xuất vùng (region proposals) tiềm năng chứa đối tượng.
-  ROI Head: Phân loại và tinh chỉnh các vùng đề xuất thành các hộp giới hạn cuối cùng.
+  - Backbone: VGG16 (các lớp trước max-pooling cuối cùng).
+  - Region Proposal Network (RPN): Tạo các đề xuất vùng (region proposals) tiềm năng chứa đối tượng.
+  - ROI Head: Phân loại và tinh chỉnh các vùng đề xuất thành các hộp giới hạn cuối cùng.
 - Chi tiết triển khai mô hình nằm trong file ***Model/faster_rcnn.py***.
 
 **8.Results**
