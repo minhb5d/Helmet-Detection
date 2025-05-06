@@ -1,0 +1,163 @@
+Parameter Selection Rationale and Impact of Changes
+Dưới đây là lý do chọn các giá trị cụ thể cho các tham số trong model_params của dự án Helmet Detection, cùng với phân tích ảnh hưởng khi thay đổi chúng. Các tham số này được thiết kế để tối ưu hóa hiệu suất của mô hình Faster R-CNN trong việc phát hiện mũ bảo hiểm, đồng thời cân bằng giữa độ chính xác và hiệu suất tính toán.
+
+Parameter Rationale and Impact
+1. backbone_out_channels: 512
+
+Lý do chọn: Giá trị 512 là số kênh đầu ra của backbone VGG16 (tầng cuối cùng của vgg16.features trước max-pooling). Đây là giá trị cố định của kiến trúc VGG16, phù hợp để cung cấp đặc trưng phong phú cho Region Proposal Network (RPN).
+Ảnh hưởng khi thay đổi:
+Nếu giảm (ví dụ: 256), số lượng đặc trưng đầu ra sẽ giảm, có thể làm giảm khả năng phát hiện đối tượng nhỏ hoặc phức tạp, dẫn đến độ chính xác thấp hơn.
+Nếu tăng, cần thay đổi kiến trúc backbone (ví dụ: sử dụng ResNet thay vì VGG16), điều này có thể tăng độ chính xác nhưng cũng tăng yêu cầu tính toán.
+
+
+
+
+2. scales: [128, 256, 512]
+
+Lý do chọn: Các giá trị này đại diện cho diện tích của anchor boxes (neo) trong RPN, được chọn để phù hợp với kích thước của mũ bảo hiểm trong ảnh (thường là đối tượng trung bình đến lớn). Các giá trị 128, 256, 512 tương ứng với diện tích 128x128, 256x256, và 512x512 pixel, bao phủ nhiều kích thước đối tượng.
+Ảnh hưởng khi thay đổi:
+Nếu giảm (ví dụ: [64, 128, 256]), mô hình sẽ tập trung vào các đối tượng nhỏ hơn, nhưng có thể bỏ qua các đối tượng lớn hơn, dẫn đến bỏ sót mũ bảo hiểm lớn.
+Nếu tăng (ví dụ: [256, 512, 1024]), mô hình sẽ phát hiện các đối tượng lớn hơn, nhưng có thể bỏ qua các đối tượng nhỏ, đồng thời tăng chi phí tính toán.
+
+
+
+
+3. aspect_ratios: [0.5, 1.0, 2.0]
+
+Lý do chọn: Các tỷ lệ khung hình này (0.5, 1.0, 2.0) được chọn để bao phủ các hình dạng khác nhau của mũ bảo hiểm. Mũ bảo hiểm có thể có hình dạng gần vuông (1:1), hoặc hơi dẹt (2:1), hoặc cao hơn (1:2), tùy thuộc vào góc nhìn.
+Ảnh hưởng khi thay đổi:
+Nếu thêm tỷ lệ (ví dụ: [0.3, 0.5, 1.0, 2.0, 3.0]), mô hình sẽ bao phủ nhiều hình dạng hơn, nhưng số lượng anchor tăng lên, làm tăng chi phí tính toán và có thể gây ra nhiều đề xuất không cần thiết.
+Nếu giảm (ví dụ: [1.0]), mô hình sẽ chỉ tạo anchor hình vuông, dẫn đến bỏ sót các đối tượng có hình dạng không cân đối, làm giảm độ chính xác.
+
+
+
+
+4. rpn_bg_threshold: 0.3 và rpn_fg_threshold: 0.7
+
+Lý do chọn:
+rpn_bg_threshold: 0.3 được chọn để phân loại anchor là nền nếu IOU với ground truth nhỏ hơn 0.3, đảm bảo các anchor không liên quan được loại bỏ.
+rpn_fg_threshold: 0.7 được chọn để phân loại anchor là đối tượng chính nếu IOU với ground truth lớn hơn 0.7, đảm bảo chỉ các anchor có độ trùng lặp cao được sử dụng để huấn luyện.
+
+
+Ảnh hưởng khi thay đổi:
+Nếu tăng rpn_bg_threshold (ví dụ: 0.5), nhiều anchor sẽ được phân loại là nền, làm giảm số lượng anchor tích cực, có thể khiến mô hình bỏ sót đối tượng.
+Nếu giảm rpn_fg_threshold (ví dụ: 0.5), nhiều anchor sẽ được phân loại là đối tượng chính, nhưng có thể bao gồm các anchor không chính xác, làm tăng nhiễu và giảm độ chính xác.
+Nếu khoảng cách giữa hai ngưỡng quá hẹp (ví dụ: rpn_bg_threshold=0.4, rpn_fg_threshold=0.5), mô hình có thể gặp khó khăn trong việc phân loại, dẫn đến mất cân bằng giữa anchor tích cực và tiêu cực.
+
+
+
+
+5. rpn_nms_threshold: 0.7
+
+Lý do chọn: Ngưỡng 0.7 được chọn để loại bỏ các đề xuất vùng (proposals) chồng lấp trong RPN, giữ lại các đề xuất có độ trùng lặp IOU dưới 0.7. Đây là giá trị tiêu chuẩn trong Faster R-CNN, cân bằng giữa việc loại bỏ trùng lặp và giữ lại các đề xuất tiềm năng.
+Ảnh hưởng khi thay đổi:
+Nếu giảm (ví dụ: 0.5), NMS sẽ loại bỏ nhiều đề xuất hơn, có thể bỏ sót các đối tượng gần nhau, làm giảm độ nhạy (recall).
+Nếu tăng (ví dụ: 0.9), NMS sẽ giữ lại nhiều đề xuất chồng lấp, dẫn đến nhiều dự đoán trùng lặp, làm tăng tỷ lệ dương tính giả (false positives).
+
+
+
+
+6. rpn_batch_size: 256 và rpn_pos_fraction: 0.5
+
+Lý do chọn:
+rpn_batch_size: 256 là số lượng anchor được lấy mẫu trong mỗi lần huấn luyện để tính loss, phù hợp với tài nguyên tính toán và đảm bảo huấn luyện ổn định.
+rpn_pos_fraction: 0.5 đảm bảo 50% anchor được lấy mẫu là tích cực, cân bằng giữa anchor tích cực và tiêu cực để tránh thiên vị.
+
+
+Ảnh hưởng khi thay đổi:
+Nếu tăng rpn_batch_size (ví dụ: 512), sẽ cần nhiều bộ nhớ hơn, có thể gây lỗi CUDA out of memory trên GPU yếu.
+Nếu giảm rpn_pos_fraction (ví dụ: 0.3), số lượng anchor tích cực giảm, có thể làm mô hình tập trung quá nhiều vào nền, dẫn đến bỏ sót đối tượng.
+Nếu tăng rpn_pos_fraction (ví dụ: 0.7), mô hình sẽ tập trung quá nhiều vào đối tượng, có thể bỏ qua nền, làm tăng tỷ lệ dương tính giả.
+
+
+
+
+7. rpn_train_topk: 2000, rpn_test_topk: 1000, rpn_train_prenms_topk: 12000, rpn_test_prenms_topk: 6000
+
+Lý do chọn:
+rpn_train_topk: 2000 và rpn_test_topk: 1000 là số lượng đề xuất được giữ lại sau NMS trong huấn luyện và kiểm tra. Giá trị nhỏ hơn trong kiểm tra để tăng tốc độ suy luận.
+rpn_train_prenms_topk: 12000 và rpn_test_prenms_topk: 6000 là số lượng đề xuất tối đa trước NMS, đảm bảo giữ lại đủ đề xuất tiềm năng nhưng không quá tải tài nguyên.
+
+
+Ảnh hưởng khi thay đổi:
+Nếu giảm rpn_train_topk (ví dụ: 1000), mô hình có thể bỏ sót các đề xuất quan trọng trong huấn luyện, làm giảm độ chính xác.
+Nếu tăng rpn_test_topk (ví dụ: 2000), suy luận sẽ chậm hơn và có thể tạo ra nhiều dự đoán trùng lặp.
+Nếu tăng rpn_train_prenms_topk (ví dụ: 20000), sẽ cần nhiều bộ nhớ hơn, có thể gây lỗi out of memory.
+
+
+
+
+8. roi_batch_size: 128 và roi_pos_fraction: 0.25
+
+Lý do chọn:
+roi_batch_size: 128 là số lượng vùng đề xuất được lấy mẫu trong ROI Head, phù hợp với tài nguyên tính toán.
+roi_pos_fraction: 0.25 đảm bảo 25% vùng đề xuất là tích cực, giúp mô hình học tốt hơn về đối tượng mà không bị thiên vị về nền.
+
+
+Ảnh hưởng khi thay đổi:
+Nếu tăng roi_batch_size (ví dụ: 256), sẽ cần nhiều bộ nhớ hơn, có thể gây lỗi out of memory.
+Nếu tăng roi_pos_fraction (ví dụ: 0.5), mô hình sẽ tập trung nhiều hơn vào các vùng đề xuất tích cực, có thể bỏ qua nền, làm tăng dương tính giả.
+Nếu giảm roi_pos_fraction (ví dụ: 0.1), mô hình sẽ thiếu các mẫu tích cực, làm giảm khả năng phát hiện đối tượng.
+
+
+
+
+9. roi_iou_threshold: 0.5 và roi_low_bg_iou: 0.0
+
+Lý do chọn:
+roi_iou_threshold: 0.5 là ngưỡng IOU để gán vùng đề xuất với ground truth, giá trị tiêu chuẩn trong Faster R-CNN.
+roi_low_bg_iou: 0.0 (gợi ý tăng lên 0.1) được chọn để phân loại vùng đề xuất là nền nếu IOU nhỏ hơn 0.0, đảm bảo không bỏ sót các vùng tiềm năng. Nếu tăng lên 0.1, sẽ tạo khó khăn hơn cho việc phân loại nền (hard negative mining).
+
+
+Ảnh hưởng khi thay đổi:
+Nếu tăng roi_iou_threshold (ví dụ: 0.7), chỉ các vùng đề xuất có độ trùng lặp cao với ground truth mới được coi là tích cực, làm giảm số lượng mẫu tích cực, có thể khiến mô hình bỏ sót đối tượng.
+Nếu tăng roi_low_bg_iou (ví dụ: 0.1), nhiều vùng đề xuất sẽ bị bỏ qua (coi là nền), giúp cải thiện phân loại nền khó nhưng có thể bỏ sót các đối tượng yếu.
+
+
+
+
+10. roi_nms_threshold: 0.5, roi_topk_detections: 100, roi_score_threshold: 0.05
+
+Lý do chọn:
+roi_nms_threshold: 0.5 là ngưỡng NMS trong ROI Head, loại bỏ các dự đoán chồng lấp, giá trị tiêu chuẩn để cân bằng giữa độ nhạy và độ chính xác.
+roi_topk_detections: 100 giữ lại 100 dự đoán cuối cùng, đủ để phát hiện nhiều đối tượng mà không làm chậm suy luận.
+roi_score_threshold: 0.05 là ngưỡng điểm số tối thiểu để giữ lại dự đoán, giá trị thấp để đảm bảo không bỏ sót đối tượng.
+
+
+Ảnh hưởng khi thay đổi:
+Nếu tăng roi_nms_threshold (ví dụ: 0.7), sẽ giữ lại nhiều dự đoán trùng lặp, làm tăng dương tính giả.
+Nếu tăng roi_topk_detections (ví dụ: 200), suy luận sẽ chậm hơn và có thể tạo ra nhiều dự đoán không cần thiết.
+Nếu tăng roi_score_threshold (ví dụ: 0.5), nhiều dự đoán có điểm số thấp sẽ bị loại bỏ, làm giảm độ nhạy nhưng có thể cải thiện độ chính xác.
+
+
+
+
+11. roi_pool_size: 7 và fc_inner_dim: 1024
+
+Lý do chọn:
+roi_pool_size: 7 là kích thước lưới của ROI Pooling, giá trị tiêu chuẩn trong Faster R-CNN để tạo đặc trưng cố định (7x7) cho ROI Head.
+fc_inner_dim: 1024 là kích thước của các lớp fully connected trong ROI Head, cung cấp khả năng biểu diễn tốt mà không quá tải tài nguyên.
+
+
+Ảnh hưởng khi thay đổi:
+Nếu tăng roi_pool_size (ví dụ: 14), đặc trưng sẽ chi tiết hơn nhưng tăng chi phí tính toán và có thể gây overfitting nếu dữ liệu không đủ đa dạng.
+Nếu giảm fc_inner_dim (ví dụ: 512), khả năng biểu diễn của mô hình giảm, có thể làm giảm độ chính xác.
+
+
+
+
+12. min_im_size: 600 và max_im_size: 1000
+
+Lý do chọn:
+min_im_size: 600 và max_im_size: 1000 là kích thước ảnh sau khi resize, đảm bảo ảnh không quá nhỏ (giữ chi tiết) và không quá lớn (tiết kiệm tài nguyên).
+
+
+Ảnh hưởng khi thay đổi:
+Nếu giảm min_im_size (ví dụ: 300), chi tiết ảnh sẽ bị mất, làm giảm khả năng phát hiện đối tượng nhỏ.
+Nếu tăng max_im_size (ví dụ: 2000), sẽ cần nhiều bộ nhớ hơn, có thể gây lỗi out of memory.
+
+
+
+
+Kết Luận
+Các tham số trong model_params được chọn dựa trên các tiêu chuẩn của Faster R-CNN và yêu cầu của bài toán phát hiện mũ bảo hiểm. Việc thay đổi các tham số cần được thực hiện cẩn thận, vì chúng ảnh hưởng trực tiếp đến độ chính xác, hiệu suất tính toán, và khả năng hội tụ của mô hình. Khi thay đổi, bạn nên thử nghiệm trên tập dữ liệu nhỏ và điều chỉnh các tham số liên quan (như learning rate, batch size) để đảm bảo hiệu suất tốt nhất.
