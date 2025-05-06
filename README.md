@@ -1,4 +1,4 @@
-#Helmet Detection Using Faster R-CNN
+# Helmet Detection Using Faster R-CNN
 
 **1.Overview**
 - Helmet Detection là một dự án sử dụng mô hình Faster R-CNN để nhận diện mũ bảo hiểm trong ảnh. Dự án được xây dựng với mục tiêu phát hiện và phân loại hai lớp chính: helmet (có mũ bảo hiểm) và no-helmet (không có mũ bảo hiểm). Đây là một ứng dụng hữu ích trong việc giám sát an toàn giao thông, đảm bảo người tham gia giao thông tuân thủ quy định đội mũ bảo hiểm.
