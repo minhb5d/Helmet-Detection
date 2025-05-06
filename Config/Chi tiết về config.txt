@@ -1,7 +1,7 @@
 1. backbone_out_channels: 512
 - Giá trị 512 là số kênh đầu ra của backbone VGG16 (tầng cuối cùng của vgg16.features trước max-pooling). Đây là giá trị cố định của kiến trúc VGG16, phù hợp để cung cấp đặc trưng phong phú cho Region Proposal Network (RPN).
 - Nếu giảm (ví dụ: 256), số lượng đặc trưng đầu ra sẽ giảm, có thể làm giảm khả năng phát hiện đối tượng nhỏ hoặc phức tạp, dẫn đến độ chính xác thấp hơn.
-- Nếu tăng, cần thay đổi kiến trúc backbone (ví dụ: sử dụng ResNet thay vì VGG16), điều này có thể tăng độ chính xác nhưng cũng tăng yêu cầu tính toán.
+- Nếu tăng, cần thay đổi kiến trúc backbone (ví dụ: sử dụng ResNet thay vì VGG16), điều này có thể tăng độ chính xác nhưng cũng tăng yêu cầu tính toán
 
 2. scales: [128, 256, 512]
 - Các giá trị này đại diện cho diện tích của anchor boxes (neo) trong RPN, được chọn để phù hợp với kích thước của mũ bảo hiểm trong ảnh (thường là đối tượng trung bình đến lớn). Các giá trị 128, 256, 512 tương ứng với diện tích 128x128, 256x256, và 512x512 pixel, bao phủ nhiều kích thước đối tượng.
