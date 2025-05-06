@@ -26,6 +26,7 @@ Dự án sử dụng dữ liệu theo định dạng PASCAL VOC và được hu�
 **5.Train**
 - Đường dẫn dữ liệu huấn luyện được cấu hình trong train.py 
 - Mô hình sau khi huấn luyện sẽ được lưu tại ***checkpoints/faster_rcnn_helmet.pth***.
+- Mô hình chỉ hỗ trợ batch size = 1
 
 **6.Inference**
 - Để thực hiện dự đoán trên ảnh mới, sử dụng file helmet_inference.py trong thư mục Inference: ***python Inference/helmet_inference.py***
@@ -42,7 +43,11 @@ Dự án sử dụng dữ liệu theo định dạng PASCAL VOC và được hu�
 **8.Results**
 - Mô hình đạt hiệu suất tốt trong việc phát hiện và phân loại mũ bảo hiểm. Một ví dụ kết quả dự đoán có thể được xem trong file ***Inference/example.png***.
 
-
+**9.Troubleshooting**
+- Lỗi thiếu thư viện: Đảm bảo bạn đã cài đặt tất cả thư viện trong requirements.txt. Nếu gặp lỗi liên quan đến PyTorch và CUDA, hãy cài đặt lại PyTorch phù hợp với GPU của bạn.
+- Lỗi đường dẫn dữ liệu: Kiểm tra đường dẫn trong data_management.py và train.py để đảm bảo chúng trỏ đúng đến thư mục dữ liệu của bạn.
+- Lỗi huấn luyện chậm: Nếu không có GPU, huấn luyện trên CPU sẽ chậm. Hãy thử giảm số lượng epoch hoặc sử dụng máy có GPU.
+- Lỗi kích thước batch size không đồng nhất: Để batch size là 1
 
 
 
